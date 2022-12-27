@@ -8,12 +8,26 @@
 #include <unistd.h>
 #include <pthread.h>
 #include "chatroom.h"
+#include "user_manage.h"
 
 // taikhoan.txt groupchat.txt
 
-#define PORT 5550  /* Port that will be opened */
+#define PORT 5552  /* Port that will be opened */
 #define BACKLOG 20 /* Number of allowed connections */
 #define BUFF_SIZE 1024
+
+int clients[BACKLOG]; /* accepted connection fd */
+int num_clients = 0;
+
+pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+// Add client to array
+void add_client(int client)
+{
+	pthread_mutex_lock(&clients_mutex);
+	clients[num_clients++] = client;
+	pthread_mutex_unlock(&clients_mutex);
+}
 
 /* Receive and echo message to client */
 void split_message(char *message, char *username, char *password){
@@ -74,6 +88,10 @@ int main()
 			perror("\nError: ");
 
 		printf("You got a connection from %s\n", inet_ntoa((*client).sin_addr)); /* prints client's IP */
+		add_client(*connfd);
+
+		printf("Added client %d to array\n", *connfd);
+
 
 		/* For each client, spawns a thread, and the thread handles the new client */
 		// pthread_create(&tid, NULL, &echo, connfd);
@@ -105,21 +123,45 @@ void *echo(void *arg)
 		printf("Connection closed.");
 	
 	split_message(buff, username, password);
+	printf("Username: %s, Password: %s\n", username, password);
+	strcpy(buff, "Hello ");
+	strcat(buff, username);
 
-	if(login(ulist, username, password) == 1){
-		bytes_sent = send(connfd, "Dang nhap thanh cong", strlen("Dang nhap thanh cong"), 0);
+	// Send message to all clients
+	pthread_mutex_lock(&clients_mutex);
+	for(int i = 0; i < num_clients; i++){
+		bytes_sent = send(clients[i], buff, strlen(buff), 0);
+		printf("Sent %d bytes to client %d\n", bytes_sent, clients[i]);
 	}
-	else{
-		bytes_sent = send(connfd, "Dang nhap that bai", strlen("Dang nhap that bai"), 0);
-	}
+	pthread_mutex_unlock(&clients_mutex);
+
+	// if(login(ulist, username, password) == 1){
+	// 	bytes_sent = send(connfd, "Dang nhap thanh cong", strlen("Dang nhap thanh cong"), 0);
+	// }
+	// else{
+	// 	bytes_sent = send(connfd, "Dang nhap that bai", strlen("Dang nhap that bai"), 0);
+	// }
 	
+	// Receive message from client and forward to other clients
+	// while ((bytes_received = recv(connfd, buff, BUFF_SIZE, 0)) > 0)
+	// {
+	// 	buff[bytes_received] = '\0';
+	// 	// Send to other clients
+		
+	// 	// bytes_sent = send(connfd, buff, bytes_received, 0); /* send to the client welcome message */
+	// 	// if (bytes_sent < 0)
+	// 	// {
+	// 	// 	perror("\nError: ");
+	// 	// 	break;
+	// 	// }
+	// }
 
 
 	// bytes_sent = send(connfd, buff, bytes_received, 0); /* send to the client welcome message */
-	if (bytes_sent < 0)
-	{
-		perror("\nError: ");
+	// if (bytes_sent < 0)
+	// {
+	// 	perror("\nError: ");
 
-		close(connfd);
-	}
+	// 	close(connfd);
+	// }
 }
