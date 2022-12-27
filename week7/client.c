@@ -10,6 +10,12 @@
 #define SERVER_PORT 5550
 #define BUFF_SIZE 1024
 
+void concatenate(char *message, char *username, char *password){
+	strcpy(message, username);
+	strcat(message, "-");
+	strcat(message, password);
+}
+
 int main(){
 	int client_sock;
 	char buff[BUFF_SIZE + 1];
@@ -34,9 +40,12 @@ int main(){
 	//Step 4: Communicate with server			
 	
 	//send message
-	printf("\nInsert string to send:");
-	memset(buff,'\0',(strlen(buff)+1));
-	fgets(buff, BUFF_SIZE, stdin);		
+	printf("Enter username: ");
+	scanf("%s%*c", username);
+	printf("Enter password: ");
+	scanf("%s%*c", password);
+	concatenate(message, username, password);
+	strcpy(buff, message);
 	msg_len = strlen(buff);
 		
 	bytes_sent = send(client_sock, buff, msg_len, 0);

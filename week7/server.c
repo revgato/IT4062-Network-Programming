@@ -16,6 +16,22 @@
 #define BUFF_SIZE 1024
 
 /* Receive and echo message to client */
+void split_message(char *message, char *username, char *password){
+	int i = 0;
+	while(message[i] != '-'){
+		username[i] = message[i];
+		i++;
+	}
+	username[i] = '\0';
+	i++;
+	int j = 0;
+	while(message[i] != '\0'){
+		password[j] = message[i];
+		i++;
+		j++;
+	}
+	password[j] = '\0';
+}
 void *echo(void *);
 
 int main()
@@ -25,6 +41,7 @@ int main()
 	struct sockaddr_in *client; /* client's address information */
 	int sin_size;
 	pthread_t tid;
+	char bao[] = "Dang nhap thanh cong";
 
 	if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 	{ /* calls socket() */
@@ -59,6 +76,7 @@ int main()
 		printf("You got a connection from %s\n", inet_ntoa((*client).sin_addr)); /* prints client's IP */
 
 		/* For each client, spawns a thread, and the thread handles the new client */
+		// pthread_create(&tid, NULL, &echo, connfd);
 		pthread_create(&tid, NULL, &echo, connfd);
 	}
 
@@ -71,6 +89,10 @@ void *echo(void *arg)
 	int connfd;
 	int bytes_sent, bytes_received;
 	char buff[BUFF_SIZE + 1];
+	char username[50], password[50], message[100];
+	user_list *ulist = NULL;
+	read_user_data(&ulist);
+
 
 	connfd = *((int *)arg);
 	free(arg);
@@ -81,8 +103,19 @@ void *echo(void *arg)
 		perror("\nError: ");
 	else if (bytes_received == 0)
 		printf("Connection closed.");
+	
+	split_message(buff, username, password);
 
-	bytes_sent = send(connfd, buff, bytes_received, 0); /* send to the client welcome message */
+	if(login(ulist, username, password) == 1){
+		bytes_sent = send(connfd, "Dang nhap thanh cong", strlen("Dang nhap thanh cong"), 0);
+	}
+	else{
+		bytes_sent = send(connfd, "Dang nhap that bai", strlen("Dang nhap that bai"), 0);
+	}
+	
+
+
+	// bytes_sent = send(connfd, buff, bytes_received, 0); /* send to the client welcome message */
 	if (bytes_sent < 0)
 	{
 		perror("\nError: ");
