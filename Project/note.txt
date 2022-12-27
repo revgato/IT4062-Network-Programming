@@ -1,0 +1,2 @@
+Giao dien co the dung C++ (framework Qt)
+Giao thuc phai dung C
