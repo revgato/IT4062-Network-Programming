@@ -55,20 +55,33 @@ int main()
 	if (bytes_sent < 0)
 		perror("\nError: ");
 
-	// receive echo reply
-	while (1)
+	// If message is "1", then login successfully
+	bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
+	if (bytes_received < 0)
+		perror("\nError: ");
+	else if (bytes_received == 0)
+		printf("\nConnection closed.");
+	else
 	{
-		bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
-		printf("\n");
-		printf("\n");
-		printf("\n");
-		printf("\n");
 		buff[bytes_received] = '\0';
-		printf("Reply from server: %s", buff);
-		if (bytes_received < 0)
-			perror("\nError: ");
-		else if (bytes_received == 0)
-			printf("Connection closed.\n");
+		if (strcmp(buff, "1") != 0)
+			printf("Login failed!");
+		else{
+			printf("Login successfully!");
+			while(1){
+				bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
+				if (bytes_received < 0)
+					perror("\nError: ");
+				else if (bytes_received == 0)
+					printf("\nConnection closed.");
+				else
+				{
+					buff[bytes_received] = '\0';
+					printf("%s", buff);
+				}
+			}
+		}
+
 	}
 
 	// Step 4: Close socket
