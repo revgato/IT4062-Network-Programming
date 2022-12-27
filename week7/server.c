@@ -9,6 +9,8 @@
 #include <pthread.h>
 #include "chatroom.h"
 
+// taikhoan.txt groupchat.txt
+
 #define PORT 5550  /* Port that will be opened */
 #define BACKLOG 20 /* Number of allowed connections */
 #define BUFF_SIZE 1024
