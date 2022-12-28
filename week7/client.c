@@ -7,7 +7,7 @@
 #include <string.h>
 
 #define SERVER_ADDR "127.0.0.1"
-#define SERVER_PORT 5552
+#define SERVER_PORT 5556
 #define BUFF_SIZE 1024
 
 void concatenate(char *message, char *username, char *password)

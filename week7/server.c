@@ -12,7 +12,7 @@
 
 // taikhoan.txt groupchat.txt
 
-#define PORT 5552  /* Port that will be opened */
+#define PORT 5556  /* Port that will be opened */
 #define BACKLOG 20 /* Number of allowed connections */
 #define BUFF_SIZE 1024
 
@@ -27,10 +27,6 @@ client_info clients[BACKLOG];
 int num_clients = 0;
 
 pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-// Read user data from file
-user_list *ulist = NULL;
-read_user_data(&ulist);
 
 // Add client to array
 void add_client(int client, char *username)
@@ -74,6 +70,9 @@ int main()
 	int bytes_received, bytes_sent;
 	char buff[BUFF_SIZE + 1];
 	char username[50], password[50], message[100];
+	// Read user data from file
+	user_list *ulist = NULL;
+	read_user_data(&ulist);
 
 	if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 	{ /* calls socket() */
@@ -108,7 +107,7 @@ int main()
 		printf("You got a connection from %s\n", inet_ntoa((*client).sin_addr)); /* prints client's IP */
 
 		bytes_received = recv(*connfd, buff, BUFF_SIZE, 0); // Receive username and password
-		
+
 		split_message(buff, username, password);
 
 		// Login
@@ -155,7 +154,7 @@ void *echo(void *arg)
 		}
 	}
 
-	close(connfd);
+	// close(connfd);
 
 	// bytes_sent = send(connfd, buff, bytes_received, 0); /* send to the client welcome message */
 	// if (bytes_sent < 0)
