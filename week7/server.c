@@ -106,22 +106,22 @@ int main()
 
 		printf("You got a connection from %s\n", inet_ntoa((*client).sin_addr)); /* prints client's IP */
 
-		bytes_received = recv(*connfd, buff, BUFF_SIZE, 0); // Receive username and password
+		// bytes_received = recv(*connfd, buff, BUFF_SIZE, 0); // Receive username and password
 
-		split_message(buff, username, password);
+		// split_message(buff, username, password);
 
-		// Login
-		if (login(ulist, username, password) == 1)
-		{
-			bytes_sent = send(*connfd, "1", 1, 0);
-			add_client(*connfd, username);
-		}
-		else
-		{
-			bytes_sent = send(*connfd, "0", 0, 0);
-			close(*connfd);
-			continue;
-		}
+		// // Login
+		// if (login(ulist, username, password) == 1)
+		// {
+		// 	bytes_sent = send(*connfd, "1", 1, 0);
+		// 	add_client(*connfd, username);
+		// }
+		// else
+		// {
+		// 	bytes_sent = send(*connfd, "0", 0, 0);
+		// 	close(*connfd);
+		// 	continue;
+		// }
 
 		/* For each client, spawns a thread, and the thread handles the new client */
 		// pthread_create(&tid, NULL, &echo, connfd);
@@ -142,16 +142,25 @@ void *echo(void *arg)
 	connfd = *((int *)arg);
 	free(arg);
 	pthread_detach(pthread_self());
+	bytes_received = recv(connfd, buff, BUFF_SIZE, 0); // Receive username and password
+
+	split_message(buff, username, password);
+	printf("Username: %s, Password: %s\n", username, password);
+	add_client(connfd, username);
 	strcpy(message, "Hello ");
 	strcat(message, clients[num_clients - 1].username);
 
 	// Send "Hello {username}" to another client
-	for (int i = 0; i < num_clients; i++)
+	while (1)
 	{
-		if (clients[i].client != connfd)
+		for (int i = 0; i < num_clients; i++)
 		{
-			bytes_sent = send(clients[i].client, message, strlen(message), 0);
+			if (clients[i].client != connfd)
+			{
+				bytes_sent = send(clients[i].client, message, strlen(message), 0);
+			}
 		}
+		sleep(5);
 	}
 
 	// close(connfd);
