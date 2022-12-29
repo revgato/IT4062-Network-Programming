@@ -15,26 +15,31 @@ typedef struct msg_t
     char message[BUFF_SIZE];
 } msg;
 
-// Define client's linked list
-typedef struct client_list_t
+// Define element's linked list
+typedef struct element_list_t
 {
     char username[20];
     int conn_fd;
-    struct client_list_t *next;
-} client_list;
+    struct element_list_t *next;
+} element_list;
 
-// Generate new client node
-client_list *new_client()
+// To make this library more general, should write your own comparison function
+int compare_element(element_list *element1, element_list *element2){
+    return element1->conn_fd == element2->conn_fd;
+}
+
+// Generate new element node
+element_list *new_element()
 {
-    client_list *node = (client_list *)malloc(sizeof(client_list));
+    element_list *node = (element_list *)malloc(sizeof(element_list));
     node->next = NULL;
     return node;
 }
 
-// Add client to linked list
-void add_client(client_list **head, int conn_fd, char *username)
+// Add element to linked list
+void add_element(element_list **head, int conn_fd, char *username)
 {
-    client_list *node = new_client();
+    element_list *node = new_element();
     node->conn_fd = conn_fd;
     if (*head == NULL)
     {
@@ -42,7 +47,7 @@ void add_client(client_list **head, int conn_fd, char *username)
     }
     else
     {
-        client_list *temp = *head;
+        element_list *temp = *head;
 
         // Traverse to the end of linked list
         while (temp->next != NULL)
@@ -53,16 +58,16 @@ void add_client(client_list **head, int conn_fd, char *username)
     }
 }
 
-// Delete client function
+// Delete element function
 
-void delete_client(client_list **head, int conn_fd)
+void delete_element(element_list **head, element_list *element)
 {
-    client_list *temp = *head;
-    client_list *temp_prev = NULL;
+    element_list *temp = *head;
+    element_list *temp_prev = NULL;
 
     while (temp->next != NULL)
     {
-        if (temp->conn_fd == conn_fd)
+        if (compare_element(temp, element))
         {
             // If conn_fd is in head node
             if (temp_prev == NULL)
@@ -79,4 +84,15 @@ void delete_client(client_list **head, int conn_fd)
         temp_prev = temp;
         temp = temp->next;
     }
+}
+
+// Find element
+element_list *find_element(element_list *head, int conn_fd){
+    element_list *temp = head;
+    while(temp->next != NULL){
+        if(temp->conn_fd == conn_fd){
+            return temp;
+        }
+    }
+    return NULL;
 }
