@@ -1,6 +1,9 @@
 #include <stdlib.h>
 
 #define BUFF_SIZE 1024
+#define PORT 1234
+#define BACKLOG 8
+#define BUFF_SIZE 1024
 
 // Define structure of network message
 typedef struct msg_t
@@ -19,13 +22,13 @@ typedef struct msg_t
 typedef struct element_list_t
 {
     char username[20];
-    int conn_fd;
+    int connfd;
     struct element_list_t *next;
 } element_list;
 
 // To make this library more general, should write your own comparison function
 int compare_element(element_list *element1, element_list *element2){
-    return element1->conn_fd == element2->conn_fd;
+    return element1->connfd == element2->connfd;
 }
 
 // Generate new element node
@@ -37,10 +40,10 @@ element_list *new_element()
 }
 
 // Add element to linked list
-void add_element(element_list **head, int conn_fd, char *username)
+void add_element(element_list **head, int connfd, char *username)
 {
     element_list *node = new_element();
-    node->conn_fd = conn_fd;
+    node->connfd = connfd;
     if (*head == NULL)
     {
         *head = node;
@@ -69,7 +72,7 @@ void delete_element(element_list **head, element_list *element)
     {
         if (compare_element(temp, element))
         {
-            // If conn_fd is in head node
+            // If connfd is in head node
             if (temp_prev == NULL)
             {
                 *head = temp->next;
@@ -87,10 +90,10 @@ void delete_element(element_list **head, element_list *element)
 }
 
 // Find element
-element_list *find_element(element_list *head, int conn_fd){
+element_list *find_element(element_list *head, int connfd){
     element_list *temp = head;
     while(temp->next != NULL){
-        if(temp->conn_fd == conn_fd){
+        if(temp->connfd == connfd){
             return temp;
         }
     }
