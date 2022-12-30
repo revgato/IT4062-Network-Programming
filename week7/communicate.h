@@ -1,9 +1,9 @@
 #include <stdlib.h>
 
 #define BUFF_SIZE 1024
-#define PORT 1234
+#define SERVER_PORT 1234
 #define BACKLOG 8
-#define BUFF_SIZE 1024
+#define SERVER_ADDR "127.0.0.1"
 
 // Define structure of network message
 typedef struct msg_t

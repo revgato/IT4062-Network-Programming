@@ -28,7 +28,7 @@ int main(){
     }
     bzero(&server, sizeof(server));
     server.sin_family = AF_INET;
-    server.sin_port = htons(PORT);
+    server.sin_port = htons(SERVER_PORT);
     server.sin_addr.s_addr = htonl(INADDR_ANY); /* INADDR_ANY puts your IP address automatically */
 
     if (bind(listenfd, (struct sockaddr *)&server, sizeof(server)) == -1)
@@ -66,8 +66,19 @@ void *client_handle(void *arg)
     int connfd;
     int bytes_sent, bytes_received;
     char buff[BUFF_SIZE + 1];
+    user client_info;
 
     connfd = *((int *)arg);
     free(arg);
     pthread_detach(pthread_self());
+
+    bytes_received = recv(connfd, &client_info, sizeof(client_info), 0);      // blocking
+    if(bytes_received < 0)
+        perror("\nError: ");
+    else if (bytes_received == 0)
+        printf("Connection closed.");
+
+    printf("Username: %s\n", client_info.username);
+    printf("Password: %s\n", client_info.password);
+    close(connfd);
 }
