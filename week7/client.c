@@ -13,6 +13,7 @@ int main(){
     int client_sock;
     char buff[BUFF_SIZE + 1];
     user client_info;
+    msg message; 
     struct sockaddr_in server_addr;  /* server's address information */
     int msg_len, bytes_sent, bytes_received;
 
@@ -41,6 +42,16 @@ int main(){
     bytes_sent = send(client_sock, &client_info, sizeof(client_info), 0);
     if (bytes_sent < 0)
         perror("\nError: ");
+    
+    bytes_received = recv(client_sock, &message, sizeof(message), 0);
+    if(bytes_received < 0)
+        perror("\nError: ");
+    else if (bytes_received == 0)
+        printf("Connection closed.");
+    
+
+    printf("Received from server: %s\n", message.message);
+    printf("Type of status: %d\n", message.type);
 
     // Step 4: Close socket
     close(client_sock);

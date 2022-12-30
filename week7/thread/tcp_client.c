@@ -32,7 +32,6 @@ int main(){
 		
 	//Step 4: Communicate with server			
 	
-	//send message
 	printf("\nInsert string to send:");
 	memset(buff,'\0',(strlen(buff)+1));
 	fgets(buff, BUFF_SIZE, stdin);		

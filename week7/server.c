@@ -67,6 +67,7 @@ void *client_handle(void *arg)
     int bytes_sent, bytes_received;
     char buff[BUFF_SIZE + 1];
     user client_info;
+    msg message;
 
     connfd = *((int *)arg);
     free(arg);
@@ -78,7 +79,18 @@ void *client_handle(void *arg)
     else if (bytes_received == 0)
         printf("Connection closed.");
 
-    printf("Username: %s\n", client_info.username);
-    printf("Password: %s\n", client_info.password);
+    // printf("Username: %s\n", client_info.username);
+    // printf("Password: %s\n", client_info.password);
+
+    memset(buff, '\0', BUFF_SIZE);
+    strcpy(buff, "Hello ");
+    strcat(buff, client_info.username);
+
+    // Sent "Hello" to client
+    message = create_message(LOGIN_FAIL, buff);
+    bytes_sent = send(connfd, &message, sizeof(message), 0);
+    if (bytes_sent < 0)
+        perror("\nError: ");
+
     close(connfd);
 }

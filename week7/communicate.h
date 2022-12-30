@@ -1,22 +1,30 @@
 #include <stdlib.h>
 
+#define SERVER_PORT 1238
 #define BUFF_SIZE 1024
-#define SERVER_PORT 1234
 #define BACKLOG 8
 #define SERVER_ADDR "127.0.0.1"
+
+typedef enum msg_type_t
+{
+    LOGIN,
+    LOGIN_SUCCESS,
+    LOGIN_FAIL
+} msg_type;
 
 // Define structure of network message
 typedef struct msg_t
 {
-    enum msg_type
-    {
-        LOGIN,
-        LOGIN_SUCCESS,
-        LOGIN_FAIL
-    } type;
-
+    msg_type type;
     char message[BUFF_SIZE];
 } msg;
+
+msg create_message(msg_type status, char *buff){
+    msg message;
+    strcpy(message.message, buff);
+    message.type = status;
+    return message;
+}
 
 // Define element's linked list
 typedef struct element_list_t
