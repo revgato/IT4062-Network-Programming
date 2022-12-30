@@ -3,14 +3,12 @@
 #include <string.h>
 
 // Define structure of user
-
 typedef struct user_t{
     char username[20];
     char password[20];
 } user;
 
 // Define list of user
-
 typedef struct user_list_t{
     user usr;
     struct user_list_t *next;
@@ -53,4 +51,14 @@ int login(user_list *head, char *username, char *password){
         temp = temp->next;
     }
     return 0;
+}
+
+// Traverse user list and print user info 
+void traverse_list(user_list *head){
+    user_list *temp = head;
+    while(temp != NULL){
+        printf("Username: %s\n", temp->usr.username);
+        printf("Password: %s\n", temp->usr.password);
+        temp = temp->next;
+    }
 }

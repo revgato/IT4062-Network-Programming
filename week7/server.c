@@ -11,6 +11,9 @@
 #include "message.h"
 #include "communicate.h"
 
+// Load user data from taikhoan.txt file
+user_list *list_user;
+
 // Handle client task
 void *client_handle(void *);
 
@@ -20,6 +23,9 @@ int main(){
     struct sockaddr_in *client; /* server's address information */
     int sin_size;
     pthread_t tid;
+
+    read_user_data(&list_user);
+    traverse_list(list_user);
 
     if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {   /* calls sockets() */
@@ -68,6 +74,7 @@ void *client_handle(void *arg)
     char buff[BUFF_SIZE + 1];
     user client_info;
     msg message;
+    msg_type status;
 
     connfd = *((int *)arg);
     free(arg);
@@ -79,6 +86,11 @@ void *client_handle(void *arg)
     else if (bytes_received == 0)
         printf("Connection closed.");
 
+    if(login(list_user, client_info.username, client_info.password)){
+        status = LOGIN_SUCCESS;
+    }else{
+        status = LOGIN_FAIL;
+    }
     // printf("Username: %s\n", client_info.username);
     // printf("Password: %s\n", client_info.password);
 
@@ -87,7 +99,7 @@ void *client_handle(void *arg)
     strcat(buff, client_info.username);
 
     // Sent "Hello" to client
-    message = create_message(LOGIN_FAIL, buff);
+    message = create_message(status, buff);
     bytes_sent = send(connfd, &message, sizeof(message), 0);
     if (bytes_sent < 0)
         perror("\nError: ");

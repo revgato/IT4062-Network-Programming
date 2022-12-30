@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#define SERVER_PORT 1238
+#define SERVER_PORT 1239
 #define BUFF_SIZE 1024
 #define BACKLOG 8
 #define SERVER_ADDR "127.0.0.1"

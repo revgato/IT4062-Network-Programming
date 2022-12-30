@@ -49,9 +49,12 @@ int main(){
     else if (bytes_received == 0)
         printf("Connection closed.");
     
-
+    if(message.type == LOGIN_FAIL){
+        printf("Login fail\n");
+    }else if(message.type == LOGIN_SUCCESS){
+        printf("Login successfully\n");
+    }
     printf("Received from server: %s\n", message.message);
-    printf("Type of status: %d\n", message.type);
 
     // Step 4: Close socket
     close(client_sock);
