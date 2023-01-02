@@ -13,7 +13,7 @@
 
 // Load user data from taikhoan.txt file
 user_list *list_user;
-list_message *list_message;
+message_list *list_message;
 
 // Handle client task
 void *client_handle(void *);
@@ -26,7 +26,9 @@ int main(){
     pthread_t tid;
 
     read_user_data(&list_user);
-    traverse_list(list_user);
+    read_message_data(&list_message);
+    // traverse_user(list_user);                // Read user data OK
+    // traverse_message(list_message);          // Read message OK
 
     if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {   /* calls sockets() */

@@ -54,7 +54,7 @@ int login(user_list *head, char *username, char *password){
 }
 
 // Traverse user list and print user info 
-void traverse_list(user_list *head){
+void traverse_user(user_list *head){
     user_list *temp = head;
     while(temp != NULL){
         printf("Username: %s\n", temp->usr.username);
