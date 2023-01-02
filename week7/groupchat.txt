@@ -6,11 +6,3 @@ u3: I'm sorry to bother you, but I have a question.
 u2: Sure, go ahead.
 u3: I'm having trouble with my computer. Can you help me?
 u2: I'm sorry, but I'm not very good with computers.
-u1:  Hello everyone
-u2:  Long time no see! How are you?
-u1:  I'm fine, thanks. How about you?
-u2:  I'm fine, too. I'm just a little busy these days.
-u3:  I'm sorry to bother you, but I have a question.
-u2:  Sure, go ahead.
-u3:  I'm having trouble with my computer. Can you help me?
-u2:  I'm sorry, but I'm not very good with computers.

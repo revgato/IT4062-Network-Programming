@@ -1,3 +1,6 @@
+#ifndef MESSAGE_H
+#define MESSAGE_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,6 +18,11 @@ typedef struct message_list_t
     message msg;
     struct message_list_t *next;
 } message_list;
+
+void copy_chat_message(message msg2, message msg1){
+    strcpy(msg2.username, msg1.username);
+    strcpy(msg2.message, msg1.message);
+}
 
 // Read all message from file
 void read_message_data(message_list **head)
@@ -53,6 +61,7 @@ void read_message_data(message_list **head)
 void print_message(message msg)
 {
     printf("[%s]: %s\n", msg.username, msg.message);
+    fflush(stdout);
 }
 
 void update_log_file(message msg)
@@ -77,3 +86,5 @@ void traverse_message(message_list *head)
         temp = temp->next;
     }
 }
+
+#endif

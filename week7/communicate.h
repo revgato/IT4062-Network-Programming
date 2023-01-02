@@ -1,29 +1,47 @@
+#ifndef COMMUNICATE_H
+#define COMMMUNICATE_H
+
 #include <stdlib.h>
+#include "message.h"
 
 #define SERVER_PORT 1239
 #define BUFF_SIZE 1024
 #define BACKLOG 8
 #define SERVER_ADDR "127.0.0.1"
 
+// Define communicate message
 typedef enum conn_msg_type_t
 {
     LOGIN,
     LOGIN_SUCCESS,
+    CHAT_MESSAGE,
     LOGIN_FAIL
 } conn_msg_type;
 
+// Define data of communicate message
+typedef union conn_data_t{
+    message msg;
+    char text[BUFF_SIZE];
+} conn_data;
 // Define structure of network message
 typedef struct conn_msg_t
 {
     conn_msg_type type;
-    char message[BUFF_SIZE];
+    conn_data data;
 } conn_msg;
 
-conn_msg create_message(conn_msg_type status, char *buff){
+conn_msg make_message_text(conn_msg_type status, char *buff){
     conn_msg message;
-    strcpy(message.message, buff);
+    strcpy(message.data.text, buff);
     message.type = status;
     return message;
+}
+
+conn_msg make_message_chat(conn_msg_type status, message msg){
+    conn_msg conn_message;
+    copy_chat_message(conn_message.data.msg, msg);
+    conn_message.type = status;
+    return conn_message;
 }
 
 // Define element's linked list
@@ -107,3 +125,5 @@ element_list *find_element(element_list *head, int connfd){
     }
     return NULL;
 }
+
+#endif
