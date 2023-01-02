@@ -32,7 +32,6 @@ void read_message_data(message_list **head)
         new_node->next = NULL;
         // Read line until meet : character. Username and message split by : character
         fscanf(f, "%[^:]%*c%[^\n]%*c", new_node->msg.username, new_node->msg.message);
-        printf("%s %s\n", new_node->msg.username, new_node->msg.message);
         if (*head == NULL)
         {
             *head = new_node;
@@ -56,12 +55,25 @@ void print_message(message msg)
     printf("[%s]: %s\n", msg.username, msg.message);
 }
 
+void update_log_file(message msg)
+{
+    FILE *f = fopen("groupchat.txt", "a");
+    if (f == NULL)
+    {
+        printf("Cannot open file groupchat.txt\n");
+        exit(1);
+    }
+    fprintf(f, "\n%s: %s", msg.username, msg.message);
+    fclose(f);
+}
+
 void traverse_message(message_list *head)
 {
     message_list *temp = head;
     while (temp != NULL)
     {
         print_message(temp->msg);
+        update_log_file(temp->msg);
         temp = temp->next;
     }
 }
