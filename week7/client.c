@@ -9,13 +9,14 @@
 #include "message.h"
 #include "communicate.h"
 
+
 int main(){
     int client_sock;
     char buff[BUFF_SIZE + 1];
     user client_info;
-    msg message; 
+    conn_msg message; 
     struct sockaddr_in server_addr;  /* server's address information */
-    int msg_len, bytes_sent, bytes_received;
+    int conn_msg_len, bytes_sent, bytes_received;
 
     // Step 1: Construct socket
     client_sock = socket(AF_INET, SOCK_STREAM, 0);

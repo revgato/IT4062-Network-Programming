@@ -13,6 +13,7 @@
 
 // Load user data from taikhoan.txt file
 user_list *list_user;
+list_message *list_message;
 
 // Handle client task
 void *client_handle(void *);
@@ -73,8 +74,8 @@ void *client_handle(void *arg)
     int bytes_sent, bytes_received;
     char buff[BUFF_SIZE + 1];
     user client_info;
-    msg message;
-    msg_type status;
+    conn_msg message;
+    conn_msg_type status;
 
     connfd = *((int *)arg);
     free(arg);

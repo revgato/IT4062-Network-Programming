@@ -5,22 +5,22 @@
 #define BACKLOG 8
 #define SERVER_ADDR "127.0.0.1"
 
-typedef enum msg_type_t
+typedef enum conn_msg_type_t
 {
     LOGIN,
     LOGIN_SUCCESS,
     LOGIN_FAIL
-} msg_type;
+} conn_msg_type;
 
 // Define structure of network message
-typedef struct msg_t
+typedef struct conn_msg_t
 {
-    msg_type type;
+    conn_msg_type type;
     char message[BUFF_SIZE];
-} msg;
+} conn_msg;
 
-msg create_message(msg_type status, char *buff){
-    msg message;
+conn_msg create_message(conn_msg_type status, char *buff){
+    conn_msg message;
     strcpy(message.message, buff);
     message.type = status;
     return message;
