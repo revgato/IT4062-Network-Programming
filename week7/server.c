@@ -124,6 +124,7 @@ void *send_log(int connfd)
     while (temp != NULL)
     {
         conn_message = make_message_chat(CHAT_MESSAGE, temp->msg);
+        printf("Sent message: %s\n", conn_message.data.msg.message);
         bytes_sent = send(connfd, &conn_message, sizeof(conn_message), 0);
         if (bytes_sent < 0)
         {

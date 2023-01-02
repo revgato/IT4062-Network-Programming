@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "message.h"
 
-#define SERVER_PORT 1239
+#define SERVER_PORT 1253
 #define BUFF_SIZE 1024
 #define BACKLOG 8
 #define SERVER_ADDR "127.0.0.1"
@@ -39,7 +39,7 @@ conn_msg make_message_text(conn_msg_type status, char *buff){
 
 conn_msg make_message_chat(conn_msg_type status, message msg){
     conn_msg conn_message;
-    copy_chat_message(conn_message.data.msg, msg);
+    copy_chat_message(&(conn_message.data.msg), msg);
     conn_message.type = status;
     return conn_message;
 }

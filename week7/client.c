@@ -64,9 +64,25 @@ int main()
         printf("Login successfully\n");
     }
     printf("Received from server: %s\n", message.data.text);
-    printf("Client_sockgoc: %d\n", client_sock);
     fflush(stdout);
-
+    // while (1)
+    // {
+    //     fflush(stdout);
+    //     bytes_received = recv(client_sock, &message, sizeof(message), 0); // blocking
+    //     fflush(stdout);
+    //     if (bytes_received < 0)
+    //     {
+    //         perror("\nError: ");
+    //         break;
+    //     }
+    //     else if (bytes_received == 0)
+    //     {
+    //         printf("Connection closed.");
+    //         break;
+    //     }
+    //     print_message(message.data.msg);
+    // }
+    printf("Main client_sock: %d\n", client_sock);
     pthread_create(&receive_thread, NULL, &receive_message, (void *)client_sock);
     // Step 4: Close socket
     close(client_sock);
@@ -79,28 +95,43 @@ void *receive_message(void *arg)
     int bytes_received;
     conn_msg conn_message;
     client_sock = (int)arg;
-    printf("Client_sock: %d\n", client_sock);
+    printf("thread Client_sock: %d\n", client_sock);
     fflush(stdout);
 
     // free(arg);
-    // pthread_detach(pthread_self());
+    pthread_detach(pthread_self());
+    printf("Check\n");
+    // while (1)
+    // {
+    //     bytes_received = recv(client_sock, &conn_message, sizeof(conn_message), 0); // blocking
+    //     printf("received %d bytes\n", bytes_received);
+    //     fflush(stdout);
+    //     if (bytes_received < 0)
+    //     {
+    //         perror("\nError: ");
+    //         // break;
+    //     }
+    //     else if (bytes_received == 0)
+    //     {
+    //         printf("Connection closed.");
+    //         // break;
+    //     }
+    //     print_message(conn_message.data.msg);
+    // }
 
-    while (1)
+    while ((bytes_received = recv(client_sock, &conn_message, sizeof(conn_message), 0)) > 0)
     {
-        printf("Check\n");
-        fflush(stdout);
-        bytes_received = recv(client_sock, &conn_message, sizeof(conn_message), 0); // blocking
         printf("received %d bytes\n", bytes_received);
         fflush(stdout);
         if (bytes_received < 0)
         {
             perror("\nError: ");
-            break;
+            // break;
         }
         else if (bytes_received == 0)
         {
             printf("Connection closed.");
-            break;
+            // break;
         }
         print_message(conn_message.data.msg);
     }

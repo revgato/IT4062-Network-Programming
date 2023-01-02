@@ -19,9 +19,9 @@ typedef struct message_list_t
     struct message_list_t *next;
 } message_list;
 
-void copy_chat_message(message msg2, message msg1){
-    strcpy(msg2.username, msg1.username);
-    strcpy(msg2.message, msg1.message);
+void copy_chat_message(message *msg2, message msg1){
+    strcpy((*msg2).username, msg1.username);
+    strcpy((*msg2).message, msg1.message);
 }
 
 // Read all message from file
