@@ -106,32 +106,36 @@ void *client_handle(void *arg)
         status = LOGIN_FAIL;
     }
     // If LOGIN_SUCCESS
-    add_client(&list_client, connfd, client_info.username);
-
-    memset(buff, '\0', BUFF_SIZE);
-    strcpy(buff, "Hello ");
-    strcat(buff, client_info.username);
-
-    // Sent "Hello" to all client
-    message = make_message_text(status, buff);
-    // while (temp != NULL)
-    bytes_sent = send(connfd, &message, sizeof(message), 0);
-    if (bytes_sent < 0)
-        perror("\nError: ");
-    message.type = CONN_MESSAGE;
-    send_all(&message);
-    send_log(connfd);
-    // Receive chat message from client
-    while (1)
+    if (status == LOGIN_SUCCESS)
     {
-        bytes_received = recv(connfd, &message, sizeof(message), 0);
-        if (bytes_received < 0)
+        add_client(&list_client, connfd, client_info.username);
+
+        memset(buff, '\0', BUFF_SIZE);
+        strcpy(buff, "Hello ");
+        strcat(buff, client_info.username);
+
+        // Sent "Hello" to all client
+        message = make_message_text(status, buff);
+        // while (temp != NULL)
+        bytes_sent = send(connfd, &message, sizeof(message), 0);
+        if (bytes_sent < 0)
             perror("\nError: ");
-        else if (bytes_received == 0)
-            printf("Connection closed.");
+        message.type = CONN_MESSAGE;
         send_all(&message);
+        send_log(connfd);
+        // Receive chat message from client
+        while (1)
+        {
+            bytes_received = recv(connfd, &message, sizeof(message), 0);
+            if (bytes_received < 0)
+                perror("\nError: ");
+            else if (bytes_received == 0)
+                printf("Connection closed.");
+            send_all(&message);
+        }
+        // close(connfd);
     }
-    // close(connfd);
+    close(connfd);
 }
 
 // Send chat history to joined client

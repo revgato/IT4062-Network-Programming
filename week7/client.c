@@ -56,24 +56,23 @@ int main()
     else if (bytes_received == 0)
         printf("Connection closed.");
 
-    if (message.type == LOGIN_FAIL)
-    {
-        printf("Login fail\n");
-    }
-    else if (message.type == LOGIN_SUCCESS)
+    if (message.type == LOGIN_SUCCESS)
     {
         printf("Login successfully\n");
-    }
-    printf("Received from server: %s\n", message.data.text);
-    fflush(stdout);
+        printf("Received from server: %s\n", message.data.text);
+        fflush(stdout);
 
-    pthread_create(&receive_thread, NULL, &receive_message, NULL);
-    pthread_create(&send_thread, NULL, &send_message, NULL);
-    // Step 4: Close socket
-    while (1)
-    {
-        sleep(1);
+        pthread_create(&receive_thread, NULL, &receive_message, NULL);
+        pthread_create(&send_thread, NULL, &send_message, NULL);
+        // Step 4: Close socket
+        while (1)
+        {
+            sleep(1);
+        }
+        close(client_sock);
+        return 0;
     }
+    printf("Login fail\n");
     close(client_sock);
     return 0;
 }
