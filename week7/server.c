@@ -14,12 +14,16 @@
 // Load user data from taikhoan.txt file
 user_list *list_user;
 message_list *list_message;
+client_list *list_client;
 
 // Handle client task
 void *client_handle(void *);
 
 // Send all log message to client
-void *send_log(int connfd);
+void send_log(int connfd);
+
+// Send message to all client
+void send_all(conn_msg *message);
 
 int main()
 {
@@ -64,7 +68,7 @@ int main()
         if ((*connfd = accept(listenfd, (struct sockaddr *)client, &sin_size)) == -1)
             perror("\nError: ");
 
-        printf("You got a connection from %s\n", inet_ntoa((*client).sin_addr)); /* Print client's IP */
+        printf("bao You got a connection from %s\n", inet_ntoa((*client).sin_addr)); /* Print client's IP */
 
         // For each client, spawns a thread, and the thread handles the new client
         pthread_create(&tid, NULL, &client_handle, connfd);
@@ -82,6 +86,7 @@ void *client_handle(void *arg)
     user client_info;
     conn_msg message;
     conn_msg_type status;
+    // client_list *temp = list_client;
 
     connfd = *((int *)arg);
     free(arg);
@@ -100,6 +105,9 @@ void *client_handle(void *arg)
     {
         status = LOGIN_FAIL;
     }
+    // If LOGIN_SUCCESS
+    add_client(&list_client, connfd, client_info.username);
+
     // printf("Username: %s\n", client_info.username);
     // printf("Password: %s\n", client_info.password);
 
@@ -107,16 +115,19 @@ void *client_handle(void *arg)
     strcpy(buff, "Hello ");
     strcat(buff, client_info.username);
 
-    // Sent "Hello" to client
+    // Sent "Hello" to all client
     message = make_message_text(status, buff);
+    // while (temp != NULL)
     bytes_sent = send(connfd, &message, sizeof(message), 0);
     if (bytes_sent < 0)
         perror("\nError: ");
-    send_log(connfd);
+    message.type = CONN_MESSAGE;
+    send_all(&message);
+    // send_log(connfd);
     // close(connfd);
 }
 
-void *send_log(int connfd)
+void send_log(int connfd)
 {
     int bytes_sent;
     message_list *temp = list_message;
@@ -126,6 +137,22 @@ void *send_log(int connfd)
         conn_message = make_message_chat(CHAT_MESSAGE, temp->msg);
         printf("Sent message: %s\n", conn_message.data.msg.message);
         bytes_sent = send(connfd, &conn_message, sizeof(conn_message), 0);
+        if (bytes_sent < 0)
+        {
+            perror("\nError: ");
+            break;
+        }
+        temp = temp->next;
+    }
+}
+
+void send_all(conn_msg *message)
+{
+    client_list *temp = list_client;
+    int bytes_sent;
+    while (temp != NULL)
+    {
+        bytes_sent = send(temp->connfd, message, sizeof(*message), 0);
         if (bytes_sent < 0)
         {
             perror("\nError: ");

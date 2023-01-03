@@ -65,22 +65,22 @@ int main()
     }
     printf("Received from server: %s\n", message.data.text);
     fflush(stdout);
-    while (1)
-    {
-        bytes_received = recv(client_sock, &message, sizeof(message), 0); // blocking
-        fflush(stdout);
-        if (bytes_received < 0)
-        {
-            perror("\nError: ");
-            break;
-        }
-        else if (bytes_received == 0)
-        {
-            printf("Connection closed.");
-            break;
-        }
-        print_message(message.data.msg);
-    }
+    // while (1)
+    // {
+    //     bytes_received = recv(client_sock, &message, sizeof(message), 0); // blocking
+    //     fflush(stdout);
+    //     if (bytes_received < 0)
+    //     {
+    //         perror("\nError: ");
+    //         break;
+    //     }
+    //     else if (bytes_received == 0)
+    //     {
+    //         printf("Connection closed.");
+    //         break;
+    //     }
+    //     print_message(message.data.msg);
+    // }
     pthread_create(&receive_thread, NULL, &receive_message, NULL);
     // Step 4: Close socket
     close(client_sock);
@@ -110,7 +110,15 @@ void *receive_message()
             printf("Connection closed.");
             // break;
         }
-        print_message(conn_message.data.msg);
+        switch (conn_message.type)
+        {
+        case CHAT_MESSAGE:
+            print_message(conn_message.data.msg);
+            break;
+        case CONN_MESSAGE:
+            printf("%s\n", conn_message.data.text);
+            break;
+        }
     }
     close(client_sock);
 }

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "message.h"
 
-#define SERVER_PORT 1237
+#define SERVER_PORT 1238
 #define BUFF_SIZE 1024
 #define BACKLOG 8
 #define SERVER_ADDR "127.0.0.1"
@@ -15,6 +15,7 @@ typedef enum conn_msg_type_t
     LOGIN,
     LOGIN_SUCCESS,
     CHAT_MESSAGE,
+    CONN_MESSAGE,
     LOGIN_FAIL
 } conn_msg_type;
 
@@ -44,39 +45,40 @@ conn_msg make_message_chat(conn_msg_type status, message msg){
     return conn_message;
 }
 
-// Define element's linked list
-typedef struct element_list_t
+// Define client's linked list
+typedef struct client_list_t
 {
     char username[20];
     int connfd;
-    struct element_list_t *next;
-} element_list;
+    struct client_list_t *next;
+} client_list;
 
 // To make this library more general, should write your own comparison function
-int compare_element(element_list *element1, element_list *element2){
-    return element1->connfd == element2->connfd;
+int compare_client(client_list *client1, client_list *client2){
+    return client1->connfd == client2->connfd;
 }
 
-// Generate new element node
-element_list *new_element()
+// Generate new client node
+client_list *new_client()
 {
-    element_list *node = (element_list *)malloc(sizeof(element_list));
+    client_list *node = (client_list *)malloc(sizeof(client_list));
     node->next = NULL;
     return node;
 }
 
-// Add element to linked list
-void add_element(element_list **head, int connfd, char *username)
+// Add client to linked list
+void add_client(client_list **head, int connfd, char *username)
 {
-    element_list *node = new_element();
+    client_list *node = new_client();
     node->connfd = connfd;
+    strcpy(node->username, username);
     if (*head == NULL)
     {
         *head = node;
     }
     else
     {
-        element_list *temp = *head;
+        client_list *temp = *head;
 
         // Traverse to the end of linked list
         while (temp->next != NULL)
@@ -87,16 +89,16 @@ void add_element(element_list **head, int connfd, char *username)
     }
 }
 
-// Delete element function
+// Delete client function
 
-void delete_element(element_list **head, element_list *element)
+void delete_client(client_list **head, client_list *client)
 {
-    element_list *temp = *head;
-    element_list *temp_prev = NULL;
+    client_list *temp = *head;
+    client_list *temp_prev = NULL;
 
-    while (temp->next != NULL)
+    while (temp != NULL)
     {
-        if (compare_element(temp, element))
+        if (compare_client(temp, client))
         {
             // If connfd is in head node
             if (temp_prev == NULL)
@@ -115,13 +117,14 @@ void delete_element(element_list **head, element_list *element)
     }
 }
 
-// Find element
-element_list *find_element(element_list *head, int connfd){
-    element_list *temp = head;
-    while(temp->next != NULL){
+// Find client
+client_list *find_client(client_list *head, int connfd){
+    client_list *temp = head;
+    while(temp = NULL){
         if(temp->connfd == connfd){
             return temp;
         }
+        temp = temp->next;
     }
     return NULL;
 }
