@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "message.h"
 
-#define SERVER_PORT 5507
+#define SERVER_PORT 5512
 #define BUFF_SIZE 1024
 #define BACKLOG 8
 #define SERVER_ADDR "127.0.0.1"
@@ -112,15 +112,16 @@ void delete_client(client_list **head, client_list *client)
             free(temp);
             return;
         }
+
         temp_prev = temp;
         temp = temp->next;
     }
 }
 
-// Find client
+// Find client with connfd
 client_list *find_client(client_list *head, int connfd){
     client_list *temp = head;
-    while(temp = NULL){
+    while(temp != NULL){
         if(temp->connfd == connfd){
             return temp;
         }

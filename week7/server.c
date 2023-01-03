@@ -24,7 +24,7 @@ void *client_handle(void *);
 void send_log(int connfd);
 
 // Send message to all client
-void send_all(conn_msg *message);
+void send_all(conn_msg *message, int connfd);
 
 // Catch signal when server terminated
 void catch_ctrl_c(int sig);
@@ -73,7 +73,7 @@ int main()
         if ((*connfd = accept(listenfd, (struct sockaddr *)client, &sin_size)) == -1)
             perror("\nError: ");
 
-        printf("bao You got a connection from %s\n", inet_ntoa((*client).sin_addr)); /* Print client's IP */
+        printf("You got a connection from %s\n", inet_ntoa((*client).sin_addr)); /* Print client's IP */
 
         // For each client, spawns a thread, and the thread handles the new client
         pthread_create(&tid, NULL, &client_handle, connfd);
@@ -90,10 +90,8 @@ void *client_handle(void *arg)
     char buff[BUFF_SIZE + 1];
     user client_info;
     conn_msg message;
-    // Duplicate logwrite 
-    // message chat_message;
     conn_msg_type status;
-    // client_list *temp = list_client;
+    client_list *client_temp;
 
     connfd = *((int *)arg);
     free(arg);
@@ -123,26 +121,33 @@ void *client_handle(void *arg)
 
         // Sent "Hello" to all client
         message = make_message_text(status, buff);
-        // while (temp != NULL)
         bytes_sent = send(connfd, &message, sizeof(message), 0);
         if (bytes_sent < 0)
             perror("\nError: ");
         message.type = CONN_MESSAGE;
-        send_all(&message);
+        send_all(&message, connfd);
         send_log(connfd);
         // Receive chat message from client
         while (1)
         {
             bytes_received = recv(connfd, &message, sizeof(message), 0);
-            if (bytes_received < 0)
+            if (bytes_received < 0){
                 perror("\nError: ");
+                break;
+            }
             else if (bytes_received == 0)
+            {
                 printf("Connection closed.");
-            send_all(&message);
+                break;
+            }
+            send_all(&message, connfd);
             update_log_file(message.data.msg);
             add_message(&list_message, message.data.msg);
         }
-        // close(connfd);
+        client_temp = find_client(list_client, connfd);
+        delete_client(&list_client, client_temp);
+
+        close(connfd);
     }
 
     // Send login fail message to client
@@ -173,12 +178,17 @@ void send_log(int connfd)
 }
 
 // Send message contain to all client
-void send_all(conn_msg *message)
+void send_all(conn_msg *message, int connfd)
 {
     client_list *temp = list_client;
     int bytes_sent;
     while (temp != NULL)
     {
+        // If this node is client itself, skip
+        if(temp->connfd == connfd){
+            temp = temp->next;
+            continue;
+        }
         bytes_sent = send(temp->connfd, message, sizeof(*message), 0);
         if (bytes_sent < 0)
         {

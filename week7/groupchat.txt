@@ -6,4 +6,3 @@ u3: I'm sorry to bother you, but I have a question.
 u2: Sure, go ahead.
 u3: I'm having trouble with my computer. Can you help me?
 u2: I'm sorry, but I'm not very good with computers.
-u1: Hello everyone

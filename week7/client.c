@@ -59,7 +59,6 @@ int main()
     if (message.type == LOGIN_SUCCESS)
     {
         printf("Login successfully\n");
-        printf("Received from server: %s\n", message.data.text);
         fflush(stdout);
 
         pthread_create(&receive_thread, NULL, &receive_message, NULL);
