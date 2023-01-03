@@ -121,9 +121,8 @@ void *client_handle(void *arg)
     bytes_sent = send(connfd, &message, sizeof(message), 0);
     if (bytes_sent < 0)
         perror("\nError: ");
-    message.type = CONN_MESSAGE;
     send_all(&message);
-    // send_log(connfd);
+    send_log(connfd);
     // close(connfd);
 }
 
@@ -150,6 +149,7 @@ void send_all(conn_msg *message)
 {
     client_list *temp = list_client;
     int bytes_sent;
+    (*message).type = CONN_MESSAGE;
     while (temp != NULL)
     {
         bytes_sent = send(temp->connfd, message, sizeof(*message), 0);
