@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/wait.h>
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
@@ -24,6 +25,9 @@ void send_log(int connfd);
 
 // Send message to all client
 void send_all(conn_msg *message);
+
+// Catch signal when server terminated
+void catch_ctrl_c(int sig);
 
 int main()
 {
@@ -62,6 +66,7 @@ int main()
 
     sin_size = sizeof(struct sockaddr_in);
     client = malloc(sin_size);
+    // signal(SIGINT, catch_ctrl_c);
     while (1)
     {
         connfd = malloc(sizeof(int));
@@ -132,6 +137,8 @@ void *client_handle(void *arg)
             else if (bytes_received == 0)
                 printf("Connection closed.");
             send_all(&message);
+            update_log_file(message.data.msg);
+            add_message(&list_message, message.data.msg);
         }
         // close(connfd);
     }
@@ -174,3 +181,11 @@ void send_all(conn_msg *message)
         temp = temp->next;
     }
 }
+
+// void catch_ctrl_c(int sig){
+//     int bytes_sent;
+//     conn_msg conn_message;
+//     make_message_text(CONN_MESSAGE, "Server terminated\n");
+//     send_all(&conn_message);
+//     exit(0);
+// }

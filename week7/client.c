@@ -107,6 +107,7 @@ void *receive_message()
             printf("%s\n", conn_message.data.text);
             fflush(stdout);
             break;
+        // case SERVER_INTTERUPT
         }
     }
     close(client_sock);
