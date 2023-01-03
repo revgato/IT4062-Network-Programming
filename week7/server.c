@@ -113,7 +113,7 @@ void *client_handle(void *arg)
     if (bytes_sent < 0)
         perror("\nError: ");
     send_log(connfd);
-    close(connfd);
+    // close(connfd);
 }
 
 void *send_log(int connfd)

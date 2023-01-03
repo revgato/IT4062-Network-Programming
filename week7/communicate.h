@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "message.h"
 
-#define SERVER_PORT 1253
+#define SERVER_PORT 1237
 #define BUFF_SIZE 1024
 #define BACKLOG 8
 #define SERVER_ADDR "127.0.0.1"

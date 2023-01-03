@@ -10,15 +10,15 @@
 #include "message.h"
 #include "communicate.h"
 
-void *receive_message(void *arg);
+void *receive_message();
+int client_sock;
+struct sockaddr_in server_addr; /* server's address information */
 
 int main()
 {
-    int client_sock;
     char buff[BUFF_SIZE + 1];
     user client_info;
     conn_msg message;
-    struct sockaddr_in server_addr; /* server's address information */
     int conn_msg_len, bytes_sent, bytes_received;
     pthread_t receive_thread, send_thread;
 
@@ -65,62 +65,39 @@ int main()
     }
     printf("Received from server: %s\n", message.data.text);
     fflush(stdout);
-    // while (1)
-    // {
-    //     fflush(stdout);
-    //     bytes_received = recv(client_sock, &message, sizeof(message), 0); // blocking
-    //     fflush(stdout);
-    //     if (bytes_received < 0)
-    //     {
-    //         perror("\nError: ");
-    //         break;
-    //     }
-    //     else if (bytes_received == 0)
-    //     {
-    //         printf("Connection closed.");
-    //         break;
-    //     }
-    //     print_message(message.data.msg);
-    // }
-    printf("Main client_sock: %d\n", client_sock);
-    pthread_create(&receive_thread, NULL, &receive_message, (void *)client_sock);
+    while (1)
+    {
+        bytes_received = recv(client_sock, &message, sizeof(message), 0); // blocking
+        fflush(stdout);
+        if (bytes_received < 0)
+        {
+            perror("\nError: ");
+            break;
+        }
+        else if (bytes_received == 0)
+        {
+            printf("Connection closed.");
+            break;
+        }
+        print_message(message.data.msg);
+    }
+    pthread_create(&receive_thread, NULL, &receive_message, NULL);
     // Step 4: Close socket
     close(client_sock);
     return 0;
 }
 
-void *receive_message(void *arg)
+void *receive_message()
 {
-    int client_sock;
     int bytes_received;
     conn_msg conn_message;
-    client_sock = (int)arg;
-    printf("thread Client_sock: %d\n", client_sock);
-    fflush(stdout);
 
-    // free(arg);
     pthread_detach(pthread_self());
-    printf("Check\n");
-    // while (1)
-    // {
-    //     bytes_received = recv(client_sock, &conn_message, sizeof(conn_message), 0); // blocking
-    //     printf("received %d bytes\n", bytes_received);
-    //     fflush(stdout);
-    //     if (bytes_received < 0)
-    //     {
-    //         perror("\nError: ");
-    //         // break;
-    //     }
-    //     else if (bytes_received == 0)
-    //     {
-    //         printf("Connection closed.");
-    //         // break;
-    //     }
-    //     print_message(conn_message.data.msg);
-    // }
 
     while ((bytes_received = recv(client_sock, &conn_message, sizeof(conn_message), 0)) > 0)
     {
+
+        fflush(stdout);
         printf("received %d bytes\n", bytes_received);
         fflush(stdout);
         if (bytes_received < 0)
