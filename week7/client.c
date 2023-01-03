@@ -64,7 +64,7 @@ int main()
 
         pthread_create(&receive_thread, NULL, &receive_message, NULL);
         pthread_create(&send_thread, NULL, &send_message, NULL);
-        // Step 4: Close socket
+        // Step 4: Keep thread (sorry I don't know a better way)
         while (1)
         {
             sleep(1);
@@ -72,7 +72,11 @@ int main()
         close(client_sock);
         return 0;
     }
-    printf("Login fail\n");
+    else if (message.type == LOGIN_FAIL)
+    {
+        printf("Login fail\n");
+    }
+
     close(client_sock);
     return 0;
 }
@@ -107,7 +111,7 @@ void *receive_message()
             printf("%s\n", conn_message.data.text);
             fflush(stdout);
             break;
-        // case SERVER_INTTERUPT
+            // case SERVER_INTTERUPT
         }
     }
     close(client_sock);
@@ -125,6 +129,7 @@ void *send_message()
     while (1)
     {
         scanf("%[^\n]%*c", buff);
+        // printf("Message len: %d\n", strlen(buff));
         strcpy(chat_message.message, buff);
         strcpy(chat_message.username, client_info.username);
         conn_msg conn_message = make_message_chat(chat_message);

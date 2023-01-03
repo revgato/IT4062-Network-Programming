@@ -90,6 +90,8 @@ void *client_handle(void *arg)
     char buff[BUFF_SIZE + 1];
     user client_info;
     conn_msg message;
+    // Duplicate logwrite 
+    // message chat_message;
     conn_msg_type status;
     // client_list *temp = list_client;
 
@@ -116,8 +118,8 @@ void *client_handle(void *arg)
         add_client(&list_client, connfd, client_info.username);
 
         memset(buff, '\0', BUFF_SIZE);
-        strcpy(buff, "Hello ");
-        strcat(buff, client_info.username);
+        strcpy(buff, client_info.username);
+        strcat(buff, " has joined this room");
 
         // Sent "Hello" to all client
         message = make_message_text(status, buff);
@@ -142,6 +144,11 @@ void *client_handle(void *arg)
         }
         // close(connfd);
     }
+
+    // Send login fail message to client
+    message = make_message_text(LOGIN_FAIL, buff);
+    bytes_sent = send(connfd, &message, sizeof(message), 0);
+
     close(connfd);
 }
 

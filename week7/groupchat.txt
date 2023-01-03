@@ -7,7 +7,3 @@ u2: Sure, go ahead.
 u3: I'm having trouble with my computer. Can you help me?
 u2: I'm sorry, but I'm not very good with computers.
 u1: Hello everyone
-u3: Hi u1
-u3: Hi u1
-u2: Hello u1, long time no see
-Hello u3: 
