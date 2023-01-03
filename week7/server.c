@@ -108,9 +108,6 @@ void *client_handle(void *arg)
     // If LOGIN_SUCCESS
     add_client(&list_client, connfd, client_info.username);
 
-    // printf("Username: %s\n", client_info.username);
-    // printf("Password: %s\n", client_info.password);
-
     memset(buff, '\0', BUFF_SIZE);
     strcpy(buff, "Hello ");
     strcat(buff, client_info.username);
@@ -121,11 +118,23 @@ void *client_handle(void *arg)
     bytes_sent = send(connfd, &message, sizeof(message), 0);
     if (bytes_sent < 0)
         perror("\nError: ");
+    message.type = CONN_MESSAGE;
     send_all(&message);
     send_log(connfd);
+    // Receive chat message from client
+    while (1)
+    {
+        bytes_received = recv(connfd, &message, sizeof(message), 0);
+        if (bytes_received < 0)
+            perror("\nError: ");
+        else if (bytes_received == 0)
+            printf("Connection closed.");
+        send_all(&message);
+    }
     // close(connfd);
 }
 
+// Send chat history to joined client
 void send_log(int connfd)
 {
     int bytes_sent;
@@ -133,8 +142,8 @@ void send_log(int connfd)
     conn_msg conn_message;
     while (temp != NULL)
     {
-        conn_message = make_message_chat(CHAT_MESSAGE, temp->msg);
-        printf("Sent message: %s\n", conn_message.data.msg.message);
+        conn_message = make_message_chat(temp->msg);
+        // printf("Sent message: %s\n", conn_message.data.msg.message);
         bytes_sent = send(connfd, &conn_message, sizeof(conn_message), 0);
         if (bytes_sent < 0)
         {
@@ -145,11 +154,11 @@ void send_log(int connfd)
     }
 }
 
+// Send message contain to all client
 void send_all(conn_msg *message)
 {
     client_list *temp = list_client;
     int bytes_sent;
-    (*message).type = CONN_MESSAGE;
     while (temp != NULL)
     {
         bytes_sent = send(temp->connfd, message, sizeof(*message), 0);

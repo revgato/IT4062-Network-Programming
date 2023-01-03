@@ -11,13 +11,14 @@
 #include "communicate.h"
 
 void *receive_message();
+void *send_message();
+user client_info;
 int client_sock;
 struct sockaddr_in server_addr; /* server's address information */
 
 int main()
 {
     char buff[BUFF_SIZE + 1];
-    user client_info;
     conn_msg message;
     int conn_msg_len, bytes_sent, bytes_received;
     pthread_t receive_thread, send_thread;
@@ -67,14 +68,17 @@ int main()
     fflush(stdout);
 
     pthread_create(&receive_thread, NULL, &receive_message, NULL);
+    pthread_create(&send_thread, NULL, &send_message, NULL);
     // Step 4: Close socket
-    while(1){
+    while (1)
+    {
         sleep(1);
     }
     close(client_sock);
     return 0;
 }
 
+// Receive message from server
 void *receive_message()
 {
     int bytes_received;
@@ -106,5 +110,29 @@ void *receive_message()
             break;
         }
     }
+    close(client_sock);
+}
+
+// Send message to server
+void *send_message()
+{
+    int bytes_sent;
+    char buff[BUFF_SIZE];
+    message chat_message;
+
+    pthread_detach(pthread_self());
+
+    while (1)
+    {
+        scanf("%[^\n]%*c", buff);
+        strcpy(chat_message.message, buff);
+        strcpy(chat_message.username, client_info.username);
+        conn_msg conn_message = make_message_chat(chat_message);
+        bytes_sent = send(client_sock, &conn_message, sizeof(conn_message), 0);
+        // print_message(conn_message.data.msg);
+        if (bytes_sent < 0)
+            perror("\nError: ");
+    }
+
     close(client_sock);
 }
