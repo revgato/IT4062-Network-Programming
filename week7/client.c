@@ -16,20 +16,30 @@ user client_info;
 int client_sock;
 struct sockaddr_in server_addr; /* server's address information */
 
-int main()
+int main(int argc, char *argv[])
 {
+    if (argc != 5){
+        printf("Usage: %s <Server IP> <Server Port> <Username> <Password>\n", argv[0]);
+        return 0;
+    }
     char buff[BUFF_SIZE + 1];
     conn_msg message;
     int conn_msg_len, bytes_sent, bytes_received;
     pthread_t receive_thread, send_thread;
+    char SERV_IP[16];
+    int SERV_PORT;
+
+    strcpy(SERV_IP, argv[1]);
+    SERV_PORT = atoi(argv[2]);
 
     // Step 1: Construct socket
     client_sock = socket(AF_INET, SOCK_STREAM, 0);
 
     // Step 2: Specify server address
+    bzero(&server_addr, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(SERVER_PORT);
-    server_addr.sin_addr.s_addr = inet_addr(SERVER_ADDR);
+    server_addr.sin_port = htons(SERV_PORT);
+    server_addr.sin_addr.s_addr = inet_addr(SERV_IP);
 
     // Step 3: Request to connect server
     if (connect(client_sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) < 0)
@@ -41,10 +51,8 @@ int main()
     // Step 4: Communicate with server
 
     // Send message
-    printf("Input username: ");
-    scanf("%s%*c", client_info.username);
-    printf("Input password: ");
-    scanf("%s%*c", client_info.password);
+    strcpy(client_info.username, argv[3]);
+    strcpy(client_info.password, argv[4]);
 
     bytes_sent = send(client_sock, &client_info, sizeof(client_info), 0);
     if (bytes_sent < 0)
