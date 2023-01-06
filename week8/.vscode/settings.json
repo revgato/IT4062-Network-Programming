@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.php": "php",
+        "user_manage.h": "c"
+    }
+}

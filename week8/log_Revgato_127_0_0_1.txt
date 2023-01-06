@@ -1,0 +1,6 @@
+Ip address: 127.0.0.1
+OS: Linux
+Hostname: Revgato
+Release: 5.10.16.3-microsoft-standard-WSL2
+Version: #1 SMP Fri Apr 2 22:23:49 UTC 2021
+Machine: x86_64
